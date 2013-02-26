@@ -4,18 +4,27 @@
 #include "hidapi.h"
 #include <stdio.h>
 
+char *ids_file;
+
 // write id to logfile
 void write_logfile(char *input){
 	FILE *fp;
-	fp = fopen("ids.txt", "a+");
+	fp = fopen((ids_file == NULL) ? "ids.txt" : ids_file, "a+");
     fprintf(fp, "%s\n", input);
     fclose(fp);
 }
 
 int main(int argc, char* argv[])
 {
+	if (argc > 1){
+		ids_file = argv[1];
+		printf("Using ID file: %s\n", argv[1]);
+	} else {
+		ids_file = NULL;
+		printf("Using ID file: ids.txt\n");
+	}
 	int res;
-	#define MAX_BUF 240
+	#define MAX_BUF 200
 	unsigned char buf[MAX_BUF];
     unsigned char *bufp;
 	unsigned char userid[12];
@@ -28,10 +37,11 @@ int main(int argc, char* argv[])
 
 	while(1){
 		// Read requested state
-		res = hid_read(handle, buf, 240);
-		if (res < 0)
+		res = hid_read(handle, buf, MAX_BUF);
+		if (res < 0){
 			printf("Unable to read data.\n");
 			break;
+		}
 
 		printf("Data read:\n");
 		res = 0;
