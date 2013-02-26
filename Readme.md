@@ -1,8 +1,8 @@
 HIDAPI MagTek Card Reader ID Swipe software
-######
+========
 
-Works on OSX
-=======
+### Works on OSX
+
 
 This is an HIDAPI-based MagTek ID swipe software that works on OSX.
 
