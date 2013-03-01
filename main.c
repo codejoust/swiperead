@@ -18,7 +18,6 @@ void write_logfile(char *input){
 }
 
 
-
 struct node {
     struct node *next;
     unsigned long uid;
@@ -60,12 +59,16 @@ void swipe(char *uscid){
     struct node *cur;
     unsigned long search = atol(uscid);
     cur = root;
-    printf("Searching...\n");
+    char buf[300];
     do {
         if (cur->uid == search){
             printf("%s %s\n", cur->fname, cur->lname);
+	    sprintf(buf,"%lu,%s,%s", cur->uid, cur->fname, cur->lname);
+	    write_logfile(buf);
+	    return;
         }
     } while(cur = cur->next);
+    write_logfile(uscid);
 };
 
 
@@ -118,7 +121,6 @@ int main(int argc, char* argv[])
 
         if (n > 1){
             printf("\tSwiped User ID: %s\n", userid);
-            write_logfile(userid);
             swipe(userid);
         } else {
             printf("\tInvalid card read!\n");

@@ -51,22 +51,24 @@ struct node *readin(const char *path){
     return root;
 }
 
-void swipe(unsigned long search){
+void swipe(idt search, void (*onfound)(char*)){
     struct node *cur;
     cur = root;
     printf("Searching...\n");
     do {
         if (cur->uid == search){
             printf("%s %s\n", cur->fname, cur->lname);
-            break;
+            onfound(cur)
+            return;
         }
     } while(cur = cur->next);
+    write_logfile();
 };
 
 
-void onSwipe(unsigned long uid){
+void onSwipe(idt uid){
 	printf("Got userid: %lu\n", uid);
-	swipe(uid);
+	swipe(uid, &write_output);
 }
 
 void onError(){
@@ -76,6 +78,5 @@ void onError(){
 int main(int argc, char *argv[]){
 	readin("ids_map.txt");
 	handle_swipes(&onSwipe, &onError);
-
 }
 

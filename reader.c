@@ -5,8 +5,9 @@
 #include <stdio.h>
 
 #define MAX_BUF 200
+typedef idt unsigned long;
 
-void handle_swipes(void (*onSwipe)(unsigned long uid), void (*onError)())
+void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
 {
     unsigned char buf[MAX_BUF];
     unsigned char *bufp;
