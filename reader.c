@@ -4,8 +4,9 @@
 #include "hidapi.h"
 #include <stdio.h>
 
-#define MAX_BUF 200
-typedef idt unsigned long;
+#define MAX_BUF 300
+typedef unsigned long idt;
+
 
 void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
 {
@@ -23,7 +24,6 @@ void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
         res = hid_read(handle, buf, MAX_BUF);
         if (res < 0){
         	onError();
-            //printf("Unable to read data.\n");
             break;
         }
 
@@ -31,12 +31,18 @@ void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
         res = 0;
         bufp = buf;
         i = 0; n = 0;
-    
-        while((++i < MAX_BUF) && '%' != *bufp){
+
+        buf[MAX_BUF-1] = '\0';
+        int i = 0;
+        while((++i < MAX_BUF) && ';' != *bufp){
+            bufp++;
+        }
+        bufp++;
+        while((++i < MAX_BUF) && ';' != *bufp){
             bufp++;
         }
 
-        while(*bufp != '?' && ++i < MAX_BUF){
+        while(*bufp != '=' && ++i < MAX_BUF){
             bufp++;
             if (*bufp >= '0' && *bufp <= '9' && n < 11){
                 userid[n++] = *bufp;

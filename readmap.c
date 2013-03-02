@@ -23,7 +23,7 @@ struct node {
 };
 #define LINESZ 1024
 
-struct node *readin(const char *path){
+struct node *readin(const char *ids_file){
     FILE *fp;
     int ok = 1;
     struct node *cur;
@@ -32,7 +32,7 @@ struct node *readin(const char *path){
     root = last;
     char buf[LINESZ];
 
-    fp = fopen(path, "r");
+    fp = fopen(ids_file, "r");
 
     if (fp != NULL) {
         while (fgets (buf, LINESZ, fp)) {
@@ -51,24 +51,26 @@ struct node *readin(const char *path){
     return root;
 }
 
-void swipe(idt search, void (*onfound)(char*)){
+void swipe(idt search){
     struct node *cur;
+    char buf[300];
     cur = root;
-    printf("Searching...\n");
     do {
         if (cur->uid == search){
             printf("%s %s\n", cur->fname, cur->lname);
-            onfound(cur)
+            sprintf(buf, "%lu,%s,%s", cur->uid, cur->fname, cur->lname);
+            write_logfile(buf);
             return;
         }
     } while(cur = cur->next);
-    write_logfile();
+    sprintf(buf, "%lu", search);
+    write_logfile(buf);
 };
 
 
 void onSwipe(idt uid){
 	printf("Got userid: %lu\n", uid);
-	swipe(uid, &write_output);
+	swipe(uid);
 }
 
 void onError(){
@@ -76,7 +78,7 @@ void onError(){
 }
 
 int main(int argc, char *argv[]){
-	readin("ids_map.txt");
+	root = readin("ids_map.txt");
 	handle_swipes(&onSwipe, &onError);
 }
 
