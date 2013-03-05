@@ -8,7 +8,7 @@
 typedef unsigned long idt;
 
 
-void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
+int handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
 {
     unsigned char buf[MAX_BUF];
     unsigned char *bufp;
@@ -18,6 +18,10 @@ void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
 
     // open magtek    reader  magtekID
     handle = hid_open(0x0801, 0x0002, NULL);
+
+    if (!handle){
+        return -1;
+    }
 
     while(1){
         // Read requested state
@@ -33,14 +37,10 @@ void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
         i = 0; n = 0;
 
         buf[MAX_BUF-1] = '\0';
-        int i = 0;
-        while((++i < MAX_BUF) && ';' != *bufp){
-            bufp++;
-        }
+        
+        while((++i < MAX_BUF) && ';' != *bufp) bufp++;
         bufp++;
-        while((++i < MAX_BUF) && ';' != *bufp){
-            bufp++;
-        }
+        while((++i < MAX_BUF) && ';' != *bufp) bufp++;
 
         while(*bufp != '=' && ++i < MAX_BUF){
             bufp++;
@@ -56,5 +56,7 @@ void handle_swipes(void (*onSwipe)(idt uid), void (*onError)())
         	onError();
         }  
     }
+
+    return 0;
 
 }
