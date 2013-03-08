@@ -78,6 +78,7 @@ void onError(){
 }
 
 int main(int argc, char *argv[]){
+        if (argc > 1){ ids_file = argv[1];  }
 	root = readin("ids_map.txt");
 	handle_swipes(&onSwipe, &onError);
 }
